@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Object Oriented JavaScript for Rubyists</title>
+
+    <meta name="description" content="Understanding the power and flexibility behind JavaScript object system">
+    <meta name="author" content="Thuva Tharma">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/tomorrow-night-bright.css">
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+        <section>
+          <h1>Object Oriented JavaScript for Rubyists</h1>
+
+          <p>
+            <a href="http://www.thuvatharma.com" class="roll"><span data-title="Thuva Tharma">Thuva Tharma</span></a>
+            | Software Developer @ <a href="http://www.thescore.com" class="roll"><span data-title="theScore">theScore Inc.</span></a>
+          </p>
+        </section>
+
+        <section>
+          <h2>Functions</h2>
+
+          <pre><code class="javascript">
+  function hello(to) {
+    return "Hello " + to;
+  }
+
+  // Hello World
+  hello("World");
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Anonymous Functions</h2>
+          <p>Functions do not need to have a name</p>
+
+          <pre><code class="javascript">
+  // Hello World
+  (function(greeting) {
+    return greeting + " World";
+  })("Hello");
+          </code></pre>
+
+        </section>
+
+        <section>
+          <h2>Functions are first-class objects. A function can be:</h2>
+
+          <ul>
+            <li>Assigned as a value of a variable</li>
+            <li>Passed as an argument to another function</li>
+            <li>Returned as a value from another function</li>
+          </ul>
+        </section>
+
+        <section>
+        <pre><code class="javascript">
+  function greet(greeting) {
+    return function() {
+      return greeting + " World";
+    };
+  }
+
+  var hello = greet("Hello");
+  var goodbye = greet("Goodbye");
+
+  hello(); // Hello World
+  goodbye(); // Goodbye World
+        </code></pre>
+        </section>
+
+        <section>
+          <h2>The <code>arguments</code> object</h2>
+          <p>
+            Inside every function, you have access to an object called <code>arguments</code>, which
+            is an array-like object that contains all the arguments passed in to the function
+          </p>
+
+          <pre><code class="javascript">
+  function sum() {
+    var result = 0;
+    for(var i=0; i < arguments.length; i++) {
+      result += arguments[i];
+    }
+    return result;
+  }
+
+  sum(1, 2, 3, 4); // 10
+  sum(1, 2, 3, 4, 5); // 15
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Objects</h2>
+
+          <ul>
+            <li>Objects are simple key-value pairs--like hashes in Ruby</li>
+            <li>The keys are usually called properties</li>
+            <li>You can use <code>[]</code> or dot notation to access the value of a property: <code>obj[property]</code> or <code>obj.property</code></li>
+          </ul>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var greeter = {
+    greeting: "Hello"
+  };
+
+  greeter['greeting']; // Hello
+  greeter.greeting; // Hello
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Objects with behaviour</h2>
+          <ul>
+            <li>Since functions are first-class objects, they can be assigned as values of properties</li>
+            <li>When a function is a property of an object, you can call it a method</li>
+            <li>The first-class nature of functions combined with the fact that functions can be anonymous give a nice syntax to define methods on an object</li>
+          </ul>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var greeter = {
+    greet: function() {
+      return "Hello World";
+    }
+  };
+
+  // Regular invocation
+  greeter.greet(); // Hello World
+
+  // Dynamic invocation--like #send in Ruby
+  greeter["gre" + "et"](); // Hello World
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Let's talk about <code>this</code></h2>
+
+          <ul>
+            <li>When a function is invoked as a method on an object, <code>this</code> points to the object itself</li>
+            <li>The value of <code>this</code> is dynamic and can be changed during runtime (like <code>self</code> in Ruby)</li>
+          </ul>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var greeter = {
+    greeting: "Hello",
+    greet: function() {
+      return this.greeting + " World";
+    }
+  };
+
+  // Hello World
+  greeter.greet();
+          </code></pre>
+        </section>
+
+        <section>
+        <h2>Let's revisit functions: <code>call</code> and <code>apply</code></h2>
+
+        <ul>
+          <li>Functions are objects as such they have their own methods and properties</li>
+          <li>Two very useful function methods are <code>call</code> and <code>apply</code></li>
+          <li>An alternate way to invoke a function (other than using parentheses) is to use <code>call</code> or <code>apply</code></li>
+        </ul>
+        </section>
+
+        <section>
+          <h2>The <code>call</code> method</h2>
+
+          <ul>
+            <li>The first argument to the <code>call</code> method is an object that <code>this</code> will point to inside that function during execution</li>
+            <li>The rest of the arguments are passed as regular arguments to the function</li>
+          </ul>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function greet(name) {
+    return this.greeting + " " + name;
+  }
+
+  var hello = {
+    greeting: "Hello"
+  };
+
+  var goodbye = {
+    greeting: "Goodbye"
+  };
+
+  greet.call(hello, "Thuva"); // Hello Thuva
+  greet.call(goodbye, "Thuva"); // Goodbye Thuva
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>The <code>apply</code> method</h2>
+
+          <ul>
+            <li>The <code>apply</code> method works the same way as <code>call</code></li>
+            <li>The first argument has the same semantics as the <code>call</code> method</li>
+            <li>The second argument is an array that contains all the arguments to be passed in to the function</li>
+          </ul>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  // Hello Thuva
+  greet.apply(hello, ["Thuva"]);
+
+  // Goodbye Thuva
+  greet.apply(goodbye, ["Thuva"]);
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Emulating mixins using <code>call</code></h2>
+
+          <pre><code class="javascript">
+  var Enumerable = {
+    map: function(func) {
+      // Use this.each() here
+    },
+    select: function(func) {
+      // Use this.each() here
+    }
+  };
+
+  Enumerable.map.call(array, func);
+  Enumerable.select.call(list, func);
+  Enumerable.map.call(set, func);
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Back to Objects</h2>
+
+          <h3>Let's implement a simple reusable inheritance and mixin system</h3>
+        </section>
+
+        <section>
+          <h2>Simple Inheritance</h2>
+
+          <pre><code class="javascript">
+  function extendObject(sub, base) {
+    for(var prop in base) {
+      if(base.hasOwnProperty(prop)) {
+        sub[prop] = sub[prop] || base[prop];
+      }
+    }
+  }
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var person = {
+    getName: function() {
+      return this.name;
+    }
+  };
+
+  var user = {
+    name: "User",
+    getUsername: function() {
+      return this.name.toLowerCase();
+    }
+  };
+
+  extendObject(user, person);
+
+  user.name; // User
+  user.getName(); // User
+  user.getUsername(); // user
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Simple Mixin</h2>
+
+          <pre><code class="javascript">
+  function mixin(obj, mixins) {
+    var reversedMixins = mixins.reverse();
+
+    for(var i=0; i < reversedMixins.length; i++) {
+      var mixinObj = reversedMixins[i];
+      extendObject(obj, mixinObj)
+    }
+  }
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var person = {
+    name: "Thuva"
+  };
+
+  var greetable = {
+    hello: function() {
+      return "Hello " + this.name;
+    }
+  };
+
+  var emotional = {
+    love: function() {
+      return "Love You, " + this.name;
+    }
+  };
+
+  mixin(person, [greetable, emotional]);
+
+  person.name; // Thuva
+  person.hello(); // Hello Thuva
+  person.love(); // Love You, Thuva
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Prototype based inheritance</h2>
+
+          <ul>
+            <li>Every object has a prototype. An object inherits the properties of its prototype</li>
+            <li>You can access the prototype of an object through <code>__proto__</code> property</li>
+            <li><code>__proto__</code> property is non-standard, but implemented in all major browsers except IE--useful for learning purposes</li>
+            <li>An object's prototype itself is an object</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Property lookup</h2>
+
+          <p>When you access a property on an object, the following lookup happens:</p>
+
+          <ol>
+            <li>See if the property is available on the object itself</li>
+            <li>See if it's available on the object's prototype</li>
+            <li>Since an object's prototype itself is an object, you repeat (1) and (2) until you reach <code>Object.prototype</code></li>
+          </ol>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var obj = {
+    name: "Thuva"
+  };
+
+  obj.__proto__ = {
+    age: 25
+  };
+
+  obj.__proto__.__proto__ = {
+    occupation: "Developer"
+  };
+
+  obj.name; // Thuva
+  obj.age; // 25
+  obj.occupation; // Developer
+  obj.toString(); // [object Object]
+  obj.unknown; // undefined
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Let's revisit functions again</h2>
+        </section>
+
+        <section>
+          <h2>Constructor</h2>
+
+          <p>A constructor is any function that is intended to be used to create new objects (using <code>new</code> keyword)</p>
+
+          <pre><code class="javascript">
+  obj = new Object(); // Equivalent to obj = {}
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>When a function is invoked as constructor:</h2>
+
+          <ul>
+            <li>A new object is created and <code>this</code> points to that new object inside the constructor function</li>
+            <li>The new object (<code>this</code>) is automatically returned (no need for explicit <code>return</code>)</li>
+          </ul>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function Person(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.fullName = function() {
+      return [this.firstName, this.lastName].join(" ");
+    }
+  }
+
+  person = new Person("Thuva", "Tharma");
+
+  person.firstName; // Thuva
+  person.lastName; // Tharma
+  person.fullName(); // Thuva Tharma
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function Person(firstName, lastName) {
+    return {
+      firstName: firstName,
+      lastName: lastName,
+      fullName: function() {
+        return [this.firstName, this.lastName].join(" ");
+      }
+    }
+  }
+
+  person = Person("Thuva", "Tharma");
+
+  person.firstName; // Thuva
+  person.lastName; // Tharma
+  person.fullName(); // Thuva Tharma
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>So, why are constructors such a big deal?</h2>
+        </section>
+
+        <section>
+          <h2>The <code>prototype</code> property</h2>
+
+          <ul>
+            <li>All functions have a property called <code>prototype</code></li>
+            <li>The <code>prototype</code> property is not that useful unless the function is used as a constructor</li>
+            <li>When a funtion is used as a constructor, then all objects created using that function will have their prototype (<code>__proto__</code>) pointing to Constructor.prototype</li>
+            <li>By default Constructor.prototype has only one property called <code>constructor</code></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>All objects created using the same constructor share the same prototype object</h2>
+
+          <pre><code class="javascript">
+  person1 = new Person("Thuva", "Tharma");
+  person2 = new Person("John", "Smith");
+
+  person1.__proto__ === Person.prototype;
+  person2.__proto__ === Person.prototype;
+  person1.__proto__ === person2.___proto__;
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Since all objects created using the same constructor share the same prototype, you should put reusable properties on the constructor prototype</h2>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function Person(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  Person.prototype.fullName = function() {
+    return [this.firstName, this.lastName].join(" ");
+  };
+
+  person = new Person("Thuva", "Tharma");
+
+  person.firstName; // Thuva
+  person.lastName; // Tharma
+  person.fullName(); // Thuva Tharma
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Extending built-in prototypes</h2>
+
+          <ul>
+            <li>You can extend the prototypes of built-in objects such as string or array</li>
+            <li>This is similar to open classes in Ruby</li>
+          </ul>
+        </section>
+
+
+        <section>
+          <h2>Extending Array</h2>
+
+          <pre><code class="javascript">
+  Array.prototype.each = function(func) {
+    for(var i=0; i < this.length; i++) {
+      func(this[i]);
+    }
+  };
+
+  [1, 2, 3].each(function(elem) {
+    alert(elem);
+  });
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Let's revisit prototype based inheritance</h2>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function Person(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  Person.prototype.fullName = function() {
+    return [this.firstName, this.lastName].join(" ");
+  };
+
+  function User(firstName, lastName, username) {
+    this.firstName = firstName;
+    this.lastname = lastName;
+    this.username = username;
+  }
+
+  User.prototype = Person.prototype;
+
+  user = new User("Thuva", "Tharma", "thuva");
+  user.fullName(); // Thuva Tharma
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  User.prototype.getUsername = function() {
+    return this.username;
+  };
+
+  person = new Person("Thuva", "Tharma");
+  user = new User("Thuva", "Tharma", "thuva");
+
+  person.getUsername(); // undefined
+  user.getUsername(); // thuva
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function User(firstName, lastName, username) {
+    Person.apply(this, arguments);
+    this.username = username;
+  }
+
+  User.prototype = new Person();
+  User.prototype.constructor = User;
+  User.prototype.uber = Person.prototype;
+
+  User.prototype.getUsername = function() {
+    return this.username;
+  };
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function User(firstName, lastName, username) {
+    Person.apply(this, arguments);
+    this.username = username;
+  }
+
+  var F = function() {};
+  F.prototype = Person.prototype;
+  User.prototype = new F();
+  User.prototype.constructor = User;
+  User.prototype.uber = Person.prototype;
+
+  User.prototype.getUsername = function() {
+    return this.username;
+  };
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  function extendPrototype(subConst, baseConst) {
+    var F = function() {};
+    F.prototype = baseConst.prototype;
+
+    subConst.prototype = new F();
+    subConst.prototype.constructor = subConst;
+    subConst.prototype.uber = baseConst.prototype;
+  }
+
+  extendPrototype(User, Person);
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>What can you get when you put this all together?</h2>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var Greetable = {
+    hello: function() {
+      return "Hello " + this.name;
+    }
+  };
+
+  var Person = Class.create({
+    includes: [Greetable],
+
+    initialize: function(name) {
+      this.name = name;
+    },
+
+    getName: function() {
+      return this.name;
+    }
+  });
+
+  person = new Person("Thuva");
+  person.getName(); // Thuva;
+  person.hello(); // Hello Thuva
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var Emotional = {
+    love: function() {
+      return "Love You, " + this.name;
+    }
+  };
+
+  var User = Class.create({
+    inherits: Person,
+    includes: [Emotional],
+
+    getUsername: function() {
+      return this.name.toLowerCase();
+    }
+  });
+
+  user = new User("Tharma");
+
+  user.getName(); // Thuva
+  user.hello(); // Hello Thuva
+  user.getUsername(); // thuva
+  user.love(); // Love You, Thuva
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">
+  var Class = {
+    create: function(opts) {
+      var uber = opts.inherits || Object;
+      var initialize = opts.initialize || function() {};
+      var includes = opts.includes || [];
+
+      delete opts.inherits;
+      delete opts.initialize;
+      delete opts.includes;
+
+      var constructor = function() {
+        uber.apply(this, arguments);
+        initialize.apply(this, arguments);
+      };
+
+      extendPrototype(constructor, uber);
+      mixin(constructor.prototype, includes);
+      extendObject(constructor.prototype, opts);
+
+      return constructor;
+    }
+  };
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Calling super</h2>
+
+          <pre><code class="javascript">
+  User.prototype.getName = function() {
+    original = this.uber.getName.apply(this);
+    return "Mr. " + original;
+  }
+
+  user = new User("Tharma");
+  user.getName(); // Mr. Tharma
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Singleton Methods</h2>
+
+          <pre><code class="javascript">
+  thuva = new Person("Thuva", "Tharma");
+  nate = new Person("Nate", "Smith");
+
+  thuva.writeCode = function() {
+    return "Woo Hoo!";
+  };
+
+  nate.giveTalk = function() {
+    return "Oh No!";
+  };
+
+  thuva.writeCode(); // Woo Hoo!
+  thuva.giveTalk(); // Err: giveTalk is not a function
+
+  nate.writeCode(); // Err: writeCode is not a function
+  nate.giveTalk(); // Oh No!
+          </code></pre>
+        </section>
+
+        <section>
+          <h1>Thank You!</h1>
+          <h2>theScore is hiring!</h2>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme,
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        ]
+      });
+    </script>
+
+  </body>
+</html>
